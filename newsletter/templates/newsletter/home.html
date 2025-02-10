@@ -1,0 +1,101 @@
+{% extends 'newsletter/base.html' %}
+{% load my_tags %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная страница</title>
+    <style>
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 36px;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+        .tab:hover {
+            background-color: #0056b3;
+        }
+        .tab-content {
+            background-color: white;
+            border: 1px solid #007bff;
+            border-radius: 0 0 5px 5px;
+            padding: 20px;
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .recipient-list, .message-list, .mailing-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+    </style>
+    <script>
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        }
+    </script>
+</head>
+<body>
+    <h1>Добро пожаловать в Сервис рассылок</h1>
+    <div class="tabs">
+        <div class="tab" onclick="showTab('recipients-list')">Получатели</div>
+        <div class="tab" onclick="showTab('message-list')">Сообщения</div>
+        <div class="tab" onclick="showTab('mailing-list')">Управление рассылками</div>
+    </div>
+    <div id="recipients-list" class="tab-content active">
+        <div class="recipient-list">
+            <div class="card">Получатель 1</div>
+            <div class="card">Получатель 2</div>
+            <div class="card">Получатель 3</div>
+        </div>
+    </div>
+    <div id="message-list" class="tab-content">
+        <div class="message-list">
+            <div class="card">Сообщение 1</div>
+            <div class="card">Сообщение 2</div>
+            <div class="card">Сообщение 3</div>
+        </div>
+    </div>
+    <div id="mailing-list" class="tab-content">
+        <div class="mailing-list">
+            <div class="card">Рассылка 1</div>
+            <div
+class="card">Рассылка 2</div>
+            <div class="card">Рассылка 3</div>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}
