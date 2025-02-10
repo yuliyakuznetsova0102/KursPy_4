@@ -1,0 +1,51 @@
+{% extends 'newsletter/base.html' %}
+{% load my_tags %}
+{% block content %}
+
+<h2 class="text-center mb-4">{% if object %}Редактировать{% else %}Добавить{% endif %} сообщение</h2>
+<form method="post" class="p-4 border rounded shadow-sm bg-light">
+    {% csrf_token %}
+    <input type="hidden" name="is_edit" value="{% if object %}true{% else %}false{% endif %}">
+
+    <div class="form-group mb-4">
+        <label for="{{ form.subject.id_for_label }}" class="form-label">Тема письма:</label>
+        <input type="text" name="{{ form.subject.name }}" id="{{ form.subject.id_for_label }}"
+               class="form-control form-control-lg input-full" placeholder="Введите тему письма" required="required"
+               value="{{ form.subject.value|default:'' }}">
+        {% if form.subject.errors %}
+            <div class="error text-danger">{{ form.subject.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-4">
+        <label for="{{ form.body.id_for_label }}" class="form-label">Тело письма:</label>
+        <textarea name="{{ form.body.name }}" id="{{ form.body.id_for_label }}"
+                  class="form-control form-control-lg input-full" rows="6" placeholder="Введите текст письма">{{ form.body.value|default:'' }}</textarea>
+        {% if form.body.errors %}
+            <div class="error text-danger">{{ form.body.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        {% if object %}
+            <button type="submit" class="btn" style="background-color: #007bff; color: white; border-radius: 8px; padding: 10px 20px; text-decoration: none; font-size: 1rem;">Изменить</button>
+        {% else %}
+            <button type="submit" class="btn" style="background-color: #007bff; color: white; border-radius: 8px; padding: 10px 20px; text-decoration: none; font-size: 1rem;">Сохранить</button>
+        {% endif %}
+        <a href="{% url 'message_list' %}" class="btn" style="background-color: #6c757d; color: white; border-radius: 8px; padding: 10px 20px; text-decoration: none; font-size: 1rem;">Отмена</a>
+    </div>
+</form>
+
+<style>
+    .input-full {
+        width: 100%;
+        line-height: 1.5;
+        font-size: 1.2rem;
+    }
+
+    .form-label {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}

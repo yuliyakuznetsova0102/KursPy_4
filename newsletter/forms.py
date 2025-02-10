@@ -1,5 +1,5 @@
 from django import forms
-from .models import Recipient
+from .models import Recipient, Message
 
 
 class RecipientForm(forms.ModelForm):
@@ -19,3 +19,21 @@ class RecipientForm(forms.ModelForm):
         def form_valid(self, form):
             print(form.errors)  # Выводим ошибки формы в консоль
             return super().form_valid(form)
+
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['subject', 'body']  # Указываем поля для формы
+        widgets = {
+            'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите тему письма'}),
+            'body': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите текст письма', 'rows': 6}),
+        }
+        labels = {
+            'subject': 'Тема письма',
+            'body': 'Тело письма',
+        }
+
+    def form_valid(self, form):
+        print(form.errors)  # Выводим ошибки формы в консоль
+        return super().form_valid(form)
