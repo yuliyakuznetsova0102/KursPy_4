@@ -1,0 +1,88 @@
+{% extends 'newsletter/base.html' %}
+{% load my_tags %}
+{% block content %}
+
+<h2 class="text-center mb-4">{% if object %}Редактировать{% else %}Добавить{% endif %} рассылку</h2>
+<form method="post" class="p-4 border rounded shadow-sm bg-light">
+    {% csrf_token %}
+    <input type="hidden" name="is_edit" value="{% if object %}true{% else %}false{% endif %}">
+
+    <div class="form-group mb-4">
+        <label for="{{ form.subject.id_for_label }}" class="form-label">Тема рассылки:</label>
+        <input type="text" name="{{ form.subject.name }}" id="{{ form.subject.id_for_label }}"
+               class="form-control form-control-lg input-full" placeholder="Введите тему рассылки" required="required"
+               value="{{ form.subject.value|default:'' }}">
+        {% if form.subject.errors %}
+            <div class="error text-danger">{{ form.subject.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-4">
+        <label for="{{ form.start_time.id_for_label }}" class="form-label">Дата и время первой отправки:</label>
+        <input type="datetime-local" name="{{ form.start_time.name }}" id="{{ form.start_time.id_for_label }}"
+               class="form-control form-control-lg input-full" value="{{ form.start_time.value|default:'' }}" required="required">
+        {% if form.start_time.errors %}
+            <div class="error text-danger">{{ form.start_time.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-4">
+        <label for="{{ form.end_time.id_for_label }}" class="form-label">Дата и время окончания отправки:</label>
+        <input type="datetime-local" name="{{ form.end_time.name }}" id="{{ form.end_time.id_for_label }}"
+               class="form-control form-control-lg input-full" value="{{ form.end_time.value|default:'' }}" required="required">
+        {% if form.end_time.errors %}
+            <div class="error text-danger">{{ form.end_time.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-4">
+        <label for="{{ form.status.id_for_label }}" class="form-label">Статус:</label>
+        <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}"
+                class="form-control form-control-lg input-full">
+            <option value="active" {% if form.status.value == 'active' %}selected{% endif %}>Активен</option>
+            <option value="inactive" {% if form.status.value == 'inactive' %}selected{% endif %}>Неактивен</option>
+        </select>
+    </div>
+
+    <div class="form-group mb-4">
+        <label for="{{ form.body.id_for_label }}" class="form-label">Сообщение:</label>
+        <textarea name="{{ form.body.name }}" id="{{ form.body.id_for_label }}"
+                  class="form-control form-control-lg input-full" rows="6" placeholder="Введите текст сообщения">{{ form.body.value|default:'' }}</textarea>
+        {% if form.body.errors %}
+            <div class="error text-danger">{{ form.body.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-4">
+        <label for="{{ form.recipients.id_for_label }}" class="form-label">Получатели:</label>
+        <input type="text" name="{{ form.recipients.name }}" id="{{ form.recipients.id_for_label }}"
+               class="form-control form-control-lg input-full" placeholder="Введите получателей" required="required"
+               value="{{ form.recipients.value|default:'' }}">
+        {% if form.recipients.errors %}
+            <div class="error text-danger">{{ form.recipients.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        {% if object %}
+            <button type="submit" class="btn" style="background-color: #007bff; color: white; border-radius: 8px; padding: 10px 20px; text-decoration: none; font-size: 1rem;">Изменить</button>
+        {% else %}
+            <button type="submit" class="btn" style="background-color: #007bff; color: white; border-radius: 8px; padding: 10px 20px; text-decoration: none; font-size: 1rem;">Сохранить</button>
+        {% endif %}
+        <a href="{% url 'mailing_list' %}" class="btn" style="background-color: #6c757d; color: white; border-radius: 8px; padding: 10px 20px; text-decoration: none; font-size: 1rem;">Отмена</a>
+    </div>
+</form>
+
+<style>
+    .input-full {
+        width: 100%;
+        line-height: 1.5;
+        font-size: 1.2rem;
+    }
+
+    .form-label {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}

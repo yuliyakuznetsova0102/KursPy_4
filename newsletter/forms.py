@@ -1,5 +1,5 @@
 from django import forms
-from .models import Recipient, Message
+from .models import Recipient, Message, Mailing
 
 
 class RecipientForm(forms.ModelForm):
@@ -33,6 +33,27 @@ class MessageForm(forms.ModelForm):
             'subject': 'Тема письма',
             'body': 'Тело письма',
         }
+
+    def form_valid(self, form):
+        print(form.errors)  # Выводим ошибки формы в консоль
+        return super().form_valid(form)
+
+
+class MailingForm(forms.ModelForm):
+    class Meta:
+        model = Mailing
+        fields = ['message', 'first_sent_at', 'end_at', 'status', 'recipients']  # Указываем поля для формы
+        widgets = {
+            'first_sent_at': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'placeholder': 'Дата и время первой отправки'}),
+            'end_at': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'placeholder': 'Дата и время окончания отправки'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'message': forms.Textarea(
+                attrs={'class': 'form-control', 'placeholder': 'Введите текст сообщения', 'rows': 6}),
+            'recipients': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите получателей'}),
+        }
+
 
     def form_valid(self, form):
         print(form.errors)  # Выводим ошибки формы в консоль
