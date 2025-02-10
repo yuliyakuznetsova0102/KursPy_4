@@ -8,6 +8,34 @@ from .forms import RecipientForm, MessageForm
 class HomePageView(TemplateView):
     template_name = 'newsletter/home.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['recent_recipients'] = Recipient.objects.order_by('-updated_at')[:3]
+        context['recent_messages'] = Message.objects.order_by('-updated_at')[:3]  # Последние три сообщения
+
+        return context
+
+    def home(request):
+
+        total_mailings = Mailing.objects.count()
+        active_mailings = Mailing.objects.filter(status='Запущена').count()
+        unique_recipients = Recipient.objects.values('email').distinct().count()
+
+        recent_mailings = Mailing.objects.order_by('-updated_at')[:3]
+        recent_messages = Message.objects.order_by('-updated_at')[:3]  # Предполагается, что у вас есть модель Message
+        recent_recipients = Recipient.objects.order_by('-updated_at')[:3]
+
+        context = {
+           'total_mailings': total_mailings,
+           'active_mailings': active_mailings,
+           'unique_recipients': unique_recipients,
+           'recent_mailings': recent_mailings,
+           'recent_messages': recent_messages,
+           'recent_recipients': recent_recipients,
+        }
+        return render(request, 'newsletter/home.html', context)
+
+
 
 # Получатели рассылки
 class RecipientListView(ListView):
