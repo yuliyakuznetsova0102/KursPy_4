@@ -44,15 +44,15 @@ class MailingForm(forms.ModelForm):
         model = Mailing
         fields = ['message', 'first_sent_at', 'end_at', 'status', 'recipients']  # Указываем поля для формы
         widgets = {
-            'first_sent_at': forms.DateTimeInput(
-                attrs={'class': 'form-control', 'placeholder': 'Дата и время первой отправки'}),
-            'end_at': forms.DateTimeInput(
-                attrs={'class': 'form-control', 'placeholder': 'Дата и время окончания отправки'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
-            'message': forms.Textarea(
-                attrs={'class': 'form-control', 'placeholder': 'Введите текст сообщения', 'rows': 6}),
-            'recipients': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите получателей'}),
+            'first_sent_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Убедитесь, что queryset для message и recipients не пустой
+        self.fields['message'].queryset = Message.objects.all()
+        self.fields['recipients'].queryset = Recipient.objects.all()
 
 
     def form_valid(self, form):

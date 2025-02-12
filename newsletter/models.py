@@ -29,11 +29,11 @@ class Mailing(models.Model):
         ('Завершена', 'Завершена'),
     ]
 
-    message = models.ForeignKey(Message, on_delete=models.CASCADE)
-    recipients = models.ManyToManyField(Recipient)
-    first_sent_at = models.DateTimeField(default=timezone.now)
-    end_at = models.DateTimeField()
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Создана')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='Сообщение')
+    recipients = models.ManyToManyField(Recipient, verbose_name='Получатели')
+    first_sent_at = models.DateTimeField(verbose_name='Дата и время первой отправки')
+    end_at = models.DateTimeField(verbose_name='Дата и время окончания отправки')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Создана', verbose_name='Статус')
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

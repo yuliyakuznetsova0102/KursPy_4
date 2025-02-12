@@ -8,9 +8,8 @@
 <table class="table table-striped table-bordered" style="margin-top: 30px;">
     <thead class="thead-dark">
         <tr>
-            <th>Тема рассылки</th>
-            <th>Дата и время первой отправки</th>
-            <th>Дата и время окончания отправки</th>
+            <th>Дата начала</th>
+            <th>Дата окончания</th>
             <th>Статус</th>
             <th>Сообщение</th>
             <th>Получатели</th>
@@ -21,24 +20,23 @@
         {% if mailings %}
             {% for mailing in mailings %}
             <tr>
-                <td style="padding: 20px;">{{ mailing.subject }}</td>
-                <td style="padding: 20px;">{{ mailing.first_sent_at }}</td>
-                <td style="padding: 20px;">{{ mailing.end_at }}</td>
-                <td style="padding: 20px;">{{ mailing.status }}</td>
-                <td style="padding: 20px;">{{ mailing.message.subject |truncatechars:20}}</td>
+                <td style="padding: 20px;">{{ mailing.first_sent_at| date:"d.m.Y H:i" }}</td>
+                <td style="padding: 20px;">{{ mailing.end_at| date:"d.m.Y H:i" }}</td>
+                <td style="padding: 20px;">{{ mailing.get_status_display }}</td>
+                <td style="padding: 20px;">{{ mailing.message.subject }}</td>
                 <td style="padding: 20px;">
                     {% for recipient in mailing.recipients.all %}
                         {{ recipient.email }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </td>
                 <td style="padding: 20px;">
-                    <a class="btn btn-primary btn-sm" href="{% url 'mailing_detail' mailing.pk %}" role="button">Посмотреть</a>
+                    <a class="btn btn-primary btn-sm" href="{% url 'mailing_detail' mailing.pk %}" role="button">Просмотр</a>
                 </td>
             </tr>
             {% endfor %}
         {% else %}
             <tr>
-                <td colspan="7" class="text-center">Нет доступных рассылок.</td>
+                <td colspan="6" class="text-center">Нет доступных рассылок.</td>
             </tr>
         {% endif %}
     </tbody>
@@ -56,6 +54,36 @@
 
     .btn-primary:hover {
         background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    .btn-warning {
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin: 10px;
+        color: white;
+        text-decoration: none;
+        transition: transform 0.3s;
+        background-color: #ffc107;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+        transform: scale(1.05);
+    }
+
+    .btn-danger {
+        border-radius: 5px;
+        padding: 10px 20px;
+        margin: 10px;
+        color: white;
+        text-decoration: none;
+        transition: transform 0.3s;
+        background-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
         transform: scale(1.05);
     }
 
