@@ -129,7 +129,7 @@
         <div class="tab" onclick="showTab('message-list')">Сообщения</div>
         <div class="tab" onclick="showTab('mailing-list')">Управление рассылками</div>
     </div>
-<div id="recipients-list" class="tab-content active">
+    <div id="recipients-list" class="tab-content active">
         <h2>Получатели, добавленные или измененные в последние три операции</h2>
         <div class="recipient-list">
             {% for recipient in recent_recipients %}
@@ -166,7 +166,7 @@
             <div class="card">
                 {{ mailing.title }}
                 <div class="status">
-                    {{ mailing.status }} - {{ mailing.updated_at|date:"d.m.Y H:m:s" }}
+                    {{ mailing.status }} - {{ mailing.updated_at|date:"d.m.Y H:i" }}
                 </div>
             </div>
             {% empty %}

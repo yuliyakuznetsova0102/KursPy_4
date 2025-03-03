@@ -4,13 +4,13 @@
 <h1 class="text-center mb-4">Подтверждение удаления</h1>
 <div class="container">
     <p class="text-center">Вы уверены, что хотите удалить рассылку ? <strong>
-    <form action="{% url 'mailing_delete' mailing.id %}" method="post" class="text-center">
+    <form action="{% url 'newsletter:mailing_delete' mailing.id %}" method="post" class="text-center">
         {% csrf_token %}
         <button type="submit" class="btn"
                 style="background-color: #dc3545; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
             Удалить
         </button>
-        <a href="{% url 'mailing_list' %}" class="btn"
+        <a href="{% url 'newsletter:mailing_list' %}" class="btn"
            style="background-color: #6c757d; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s; margin-left: 10px;">
             Отмена
         </a>

@@ -3,8 +3,8 @@
 {% block content %}
 <h1 class="text-center mb-4">Детали Рассылки</h1>
 <div class="container">
-    <p style="font-size: larger;"><strong>Дата начала:</strong> {{ mailing.start_time|date:"d.m.Y H:i" }}</p>
-    <p style="font-size: larger;"><strong>Дата окончания:</strong> {{ mailing.end_time|date:"d.m.Y H:i" }}</p>
+    <p style="font-size: larger;"><strong>Дата начала:</strong> {{ mailing.first_sent_at|date:"d.m.Y H:i" }}</p>
+    <p style="font-size: larger;"><strong>Дата окончания:</strong> {{ mailing.end_at|date:"d.m.Y H:i" }}</p>
     <p style="font-size: larger;"><strong>Статус:</strong> {{ mailing.get_status_display }}</p>
     <p style="font-size: larger;"><strong>Сообщение:</strong> {{ mailing.message.subject }}</p>
     <p style="font-size: larger;"><strong>Тело письма:</strong> {{ mailing.message.body }}</p>
@@ -17,20 +17,20 @@
 
     <div class="d-flex justify-content-center mt-4 align-items-center">
         <div class="mr-3">
-            <a href="{% url 'mailing_update' mailing.id %}" class="btn"
+            <a href="{% url 'newsletter:mailing_update' mailing.id %}" class="btn"
                style="background-color: #FFD700; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
                 Редактировать
             </a>
         </div>
         <div style="margin-left: 5cm; margin-top: -0.46cm;">
-            <a href="{% url 'mailing_delete' mailing.id %}" class="btn"
+            <a href="{% url 'newsletter:mailing_delete' mailing.id %}" class="btn"
                style="background-color: #dc3545; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
                 Удалить
             </a>
         </div>
     </div>
     <div class="mt-4" style="margin-top: 0.9cm;">
-        <a href="{% url 'mailing_list' %}" class="btn"
+        <a href="{% url 'newsletter:mailing_list' %}" class="btn"
            style="background-color: #007BFF; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
             Назад к списку рассылок
         </a>

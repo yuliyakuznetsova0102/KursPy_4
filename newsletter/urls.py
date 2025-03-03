@@ -3,8 +3,11 @@ from .views import (
     HomePageView,
     RecipientListView, RecipientCreateView, RecipientUpdateView, RecipientDeleteView, RecipientDetailView,
     MessageListView, MessageDetailView, MessageCreateView, MessageUpdateView, MessageDeleteView,
-    MailingDetailView, MailingDeleteView, MailingListView, MailingCreateView, MailingUpdateView,
+    MailingDetailView, MailingDeleteView, MailingListView, MailingCreateView, MailingUpdateView, UserListView,
+    BlockUserView, DisableMailingView, send_mailing_manually
 )
+
+app_name = 'newsletter'
 
 urlpatterns = [
     path('home/', HomePageView.as_view(), name='home'),
@@ -25,4 +28,9 @@ urlpatterns = [
     path('mailing/create/', MailingCreateView.as_view(), name='mailing_create'),
     path('mailing/update/<int:pk>/', MailingUpdateView.as_view(), name='mailing_update'),
     path('mailing/delete/<int:pk>/', MailingDeleteView.as_view(), name='mailing_delete'),
+    path('send-mailing/', send_mailing_manually, name='send_mailing_manually'),
+
+    path('users/', UserListView.as_view(), name='user_list'),
+    path('users/block/<int:pk>/', BlockUserView.as_view(), name='block_user'),
+    path('mailings/disable/<int:pk>/', DisableMailingView.as_view(), name='disable_mailing'),
 ]

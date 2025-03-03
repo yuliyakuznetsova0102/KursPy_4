@@ -1,5 +1,6 @@
 from django import forms
-from .models import Recipient, Message, Mailing
+from .models import  Message, Mailing
+from .models import Recipient
 
 
 class RecipientForm(forms.ModelForm):
@@ -19,6 +20,7 @@ class RecipientForm(forms.ModelForm):
         def form_valid(self, form):
             print(form.errors)  # Выводим ошибки формы в консоль
             return super().form_valid(form)
+
 
 
 class MessageForm(forms.ModelForm):
@@ -58,3 +60,4 @@ class MailingForm(forms.ModelForm):
     def form_valid(self, form):
         print(form.errors)  # Выводим ошибки формы в консоль
         return super().form_valid(form)
+

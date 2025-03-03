@@ -9,20 +9,20 @@
 
     <div class="d-flex justify-content-center mt-4 align-items-center">
         <div class="mr-3">
-            <a href="{% url 'message_update' object.id %}" class="btn"
+            <a href="{% url 'newsletter:message_update' object.id %}" class="btn"
                style="background-color: #FFD700; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
                 Редактировать
             </a>
         </div>
         <div style="margin-left: 5cm; margin-top: -0.46cm;">
-            <a href="{% url 'message_delete' object.id %}" class="btn"
+            <a href="{% url 'newsletter:message_delete' object.id %}" class="btn"
                style="background-color: #dc3545; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
                 Удалить
             </a>
         </div>
     </div>
     <div class="mt-4" style="margin-top: 0.9cm;">
-        <a href="{% url 'message_list' %}" class="btn"
+        <a href="{% url 'newsletter:message_list' %}" class="btn"
            style="background-color: #007BFF; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
             Назад к списку сообщений
         </a>
