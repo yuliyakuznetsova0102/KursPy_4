@@ -1,6 +1,6 @@
 from django.contrib import admin
+
 from .models import Message, Mailing, Recipient
-from .utils import send_mailing
 
 
 class RecipientAdmin(admin.ModelAdmin):
@@ -11,16 +11,6 @@ class RecipientAdmin(admin.ModelAdmin):
 class MessageAdmin(admin.ModelAdmin):
     list_display = ('subject',)
     search_fields = ('subject',)
-
-
-@admin.action(description='Отправить выбранные рассылки')
-def send_selected_mailings(modeladmin, request, queryset):
-    for mailing in queryset:
-        try:
-            send_mailing(mailing.id)
-            modeladmin.message_user(request, f'Рассылка {mailing.id} отправлена')
-        except Exception as e:
-            modeladmin.message_user(request, f'Ошибка при отправке рассылки {mailing.id}: {str(e)}', level='ERROR')
 
 
 class MailingAdmin(admin.ModelAdmin):

@@ -1,0 +1,9 @@
+{% extends 'newsletter/base.html' %}
+
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+<h2>Статистика</h2>
+<p>Успешных попыток: {{ successful_attempts }}</p>
+<p>Неуспешных попыток: {{ failed_attempts }}</p>
+{% endblock %}

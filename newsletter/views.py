@@ -1,31 +1,39 @@
-from django.urls import reverse_lazy
-from .models import  Message, Mailing, MailingAttempt, Recipient
+from django.urls import reverse_lazy, reverse
+
+from .models import Message, Mailing, MailingAttempt, Recipient
 from django.views.generic import ListView, TemplateView, UpdateView, DeleteView, CreateView, DetailView, View
-from .forms import  MessageForm, MailingForm
+from .forms import MessageForm, MailingForm
 from .forms import RecipientForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
-from .utils import send_mailing
-
-
+from django.db.models import Count, Q
+from users.models import CustomUser
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 
 
 # Главная страница
+@method_decorator(cache_page(60 * 5), name='dispatch')
 class HomePageView(LoginRequiredMixin, TemplateView):
     template_name = 'newsletter/home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['total_mailings'] = Mailing.objects.count()
-        context['active_mailings'] = Mailing.objects.filter(status='Запущена').count()
-        context['unique_recipients'] = Recipient.objects.values('email').distinct().count()
-        context['recent_mailings'] = Mailing.objects.order_by('-updated_at')[:3]
-        context['recent_messages'] = Message.objects.order_by('-updated_at')[:3]
-        context['recent_recipients'] = Recipient.objects.order_by('-updated_at')[:3]
+        user = self.request.user
+
+        context['total_mailings'] = Mailing.objects.filter(owner=user).count()
+        context['active_mailings'] = Mailing.objects.filter(owner=user, status='Запущена').count()
+        context['unique_recipients'] = Recipient.objects.filter(owner=user).values('email').distinct().count()
+
+        # Последние три записи для каждого типа данных
+        context['recent_mailings'] = Mailing.objects.filter(owner=user).order_by('-updated_at')[:3]
+        context['recent_messages'] = Message.objects.filter(owner=user).order_by('-updated_at')[:3]
+        context['recent_recipients'] = Recipient.objects.filter(owner=user).order_by('-updated_at')[:3]
+
         return context
 
 
@@ -37,22 +45,19 @@ class RecipientListView(LoginRequiredMixin, ListView):
     ordering = ['-updated_at']
 
     def get_queryset(self):
-        if self.request.user.groups.filter(name='Менеджер').exists():
-            return Recipient.objects.all()  # Менеджер видит всех получателей
-        return Recipient.objects.filter(user=self.request.user)
+        if self.request.user.role == 'manager':
+            return Recipient.objects.all()
+        return Recipient.objects.filter(owner=self.request.user)
 
 
-
-class RecipientDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class RecipientDetailView(LoginRequiredMixin, DetailView):
     model = Recipient
     template_name = 'newsletter/recipients_detail.html'
     context_object_name = 'recipient'
 
-    def test_func(self):
-        recipient = self.get_object()
-        if self.request.user.is_superuser or self.request.user.groups.filter(name='Менеджер').exists():
-            return True
-        return recipient.user == self.request.user
+    def get_queryset(self):
+        return Recipient.objects.filter(owner=self.request.user)
+
 
 class RecipientCreateView(LoginRequiredMixin, CreateView):
     model = Recipient
@@ -61,84 +66,105 @@ class RecipientCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('newsletter:recipients_list')
 
     def form_valid(self, form):
-        form.instance.user = self.request.user  # Привязываем получателя к текущему пользователю
+        form.instance.owner = self.request.user
         return super().form_valid(form)
 
 
-class RecipientUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     model = Recipient
     form_class = RecipientForm
     template_name = 'newsletter/recipients_form.html'
     success_url = reverse_lazy('newsletter:recipients_list')
 
-    def test_func(self):
-        recipient = self.get_object()
-        # Только владелец получателя может его редактировать
-        return recipient.user == self.request.user
+    def get_queryset(self):
+        return Recipient.objects.filter(owner=self.request.user) or self.request.user.role == 'manager'
 
-class RecipientDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+
+class RecipientDeleteView(LoginRequiredMixin, DeleteView):
     model = Recipient
     template_name = 'newsletter/recipients_confirm_delete.html'
     success_url = reverse_lazy('newsletter:recipients_list')
 
     def test_func(self):
         recipient = self.get_object()
-        # Только владелец получателя может его удалить
-        return recipient.user == self.request.user
+        return recipient.owner == self.request.user
 
-#Сообщения
+
+# Сообщения
 class MessageListView(LoginRequiredMixin, ListView):
     model = Message
     template_name = 'newsletter/message_list.html'
     context_object_name = 'messages'
-    ordering = ['-updated_at']  # Сортировка по полю updated_at в порядке убывания
+    ordering = ['-updated_at']
+
+    def get_queryset(self):
+        return Message.objects.filter(owner=self.request.user)
 
 
-class MessageDetailView(LoginRequiredMixin,DetailView):
+def get_queryset(self):
+    return Message.objects.filter(owner=self.request.user)
+
+
+class MessageDetailView(LoginRequiredMixin, DetailView):
     model = Message
     template_name = 'newsletter/message_detail.html'
 
 
-class MessageCreateView(LoginRequiredMixin,CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     template_name = 'newsletter/message_form.html'
     form_class = MessageForm
     success_url = reverse_lazy('newsletter:message_list')
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
 
 
 class MessageUpdateView(LoginRequiredMixin, UpdateView):
     model = Message
     template_name = 'newsletter/message_form.html'
     fields = ['subject', 'body']
-    success_url = reverse_lazy('newsletter:message_list')  # Исправлено
+    success_url = reverse_lazy('newsletter:message_list')
+
+    def get_queryset(self):
+        return Message.objects.filter(owner=self.request.user)
+
 
 class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message
     template_name = 'newsletter/message_confirm_delete.html'
     success_url = reverse_lazy('newsletter:message_list')
 
+    def get_queryset(self):
+        return Message.objects.filter(owner=self.request.user)
 
-#Рассылки
+
+# Рассылки
 class MailingListView(LoginRequiredMixin, ListView):
     model = Mailing
     template_name = 'newsletter/mailing_list.html'
     context_object_name = 'mailings'
 
     def get_queryset(self):
-        if self.request.user.groups.filter(name='Менеджер').exists():
+        if self.request.user.role == 'manager':
             return Mailing.objects.all()
-        return Mailing.objects.filter(user=self.request.user)
+        return Mailing.objects.filter(owner=self.request.user)
 
-class MailingDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+
+class MailingDetailView(LoginRequiredMixin, DetailView):
     model = Mailing
     template_name = 'newsletter/mailing_detail.html'
     context_object_name = 'mailing'
 
-    def test_func(self):
+    def get_queryset(self):
+        return Mailing.objects.filter(owner=self.request.user)
+
+    def post(self, request, *args, **kwargs):
         mailing = self.get_object()
-        if self.request.user.groups.filter(name='Менеджер').exists():
-            return True
-        return mailing.user == self.request.user
+        mailing.send_manual_mailing()
+        return redirect(reverse('newsletter:mailing_detail', kwargs={'pk': mailing.pk}))
+
 
 class MailingCreateView(LoginRequiredMixin, CreateView):
     model = Mailing
@@ -146,102 +172,69 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     template_name = 'newsletter/mailing_form.html'
     success_url = reverse_lazy('newsletter:mailing_list')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['owner'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        form.instance.owner = self.request.user
         return super().form_valid(form)
 
-class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+
+class MailingUpdateView(LoginRequiredMixin, UpdateView):
     model = Mailing
     form_class = MailingForm
     template_name = 'newsletter/mailing_form.html'
-    success_url = reverse_lazy('newsletter:mailing_list')  # Исправлено
+    success_url = reverse_lazy('newsletter:mailing_list')
 
-    def test_func(self):
-        mailing = self.get_object()
-        if self.request.user.groups.filter(name='Менеджер').exists():
-            return False  # Менеджеры не могут редактировать рассылки
-        return mailing.user == self.request.user
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['owner'] = self.request.user
+        return kwargs
 
-class MailingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    def get_queryset(self):
+        return super().get_queryset().filter(owner=self.request.user)
+
+
+class MailingDeleteView(LoginRequiredMixin, DeleteView):
     model = Mailing
     template_name = 'newsletter/mailing_confirm_delete.html'
-    success_url = reverse_lazy('newsletter:mailing_list')  # Исправлено
+    success_url = reverse_lazy('newsletter:mailing_list')
 
-    def test_func(self):
-        mailing = self.get_object()
-        if self.request.user.groups.filter(name='Менеджер').exists():
-            return False  # Менеджеры не могут удалять рассылки
-        return mailing.user == self.request.user
-
-def send_mailing(mailing):
-    recipients = mailing.recipients.all()
-    subject = mailing.message.subject
-    message = mailing.message.body
-    from_email = 'YuKDj@yandex.ru'  # Замените на ваш email
-
-    for recipient in recipients:
-        try:
-            send_mail(subject, message, from_email, [recipient.email])
-            MailingAttempt.objects.create(
-                mailing=mailing,
-                status='Успешно',
-                server_response='Письмо успешно отправлено'
-            )
-        except Exception as e:
-            MailingAttempt.objects.create(
-                mailing=mailing,
-                status='Не успешно',
-                server_response=str(e)
-            )
-
-
-def send_mailing_manually(request):
-    if request.method == 'POST':
-        mailing_id = request.POST.get('mailing_id')
-        try:
-            send_mailing(mailing_id)
-            messages.success(request, 'Рассылка успешно отправлена!')  # Используем модуль messages
-        except Exception as e:
-            messages.error(request, f'Ошибка: {str(e)}')  # Используем модуль messages
-        return redirect('newsletter:send_mailing_manually')
-
-    # Получаем список всех сообщений и рассылок
-    message_list = Message.objects.all()  # Переименовываем переменную
-    mailings = Mailing.objects.all()
-    return render(request, 'newsletter/send_mailing.html', {
-        'messages': message_list,  # Передаем переименованную переменную в шаблон
-        'mailings': mailings,
-    })
+    def get_queryset(self):
+        return Mailing.objects.filter(owner=self.request.user)
 
 
 class UserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = User
-    template_name = 'newsletter/user_list.html'
+    model = CustomUser
+    template_name = 'mailing/user_list.html'
     context_object_name = 'users'
 
     def test_func(self):
-        # Только менеджер может просматривать список пользователей
-        return self.request.user.groups.filter(name='Менеджер').exists()
+        return self.request.user.role == 'manager'
 
 
-class BlockUserView(LoginRequiredMixin, UserPassesTestMixin, View):
-    def test_func(self):
-        # Только менеджер может блокировать пользователей
-        return self.request.user.groups.filter(name='Менеджер').exists()
+class MailingStatsView(ListView):
+    model = Mailing
+    template_name = 'newsletter/mailing_stats.html'
+    context_object_name = 'mailings'
 
-    def post(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
-        user.is_active = False
-        user.save()
-        return redirect('newsletter:user_list')
+    def get_queryset(self):
+        user = self.request.user
 
-class DisableMailingView(LoginRequiredMixin, UserPassesTestMixin, View):
-    def test_func(self):
-        # Только менеджер может отключать рассылки
-        return self.request.user.groups.filter(name='Менеджер').exists()
+        return Mailing.objects.filter(owner=user).annotate(
+            total_attempts=Count('attempts'),
+            successful_attempts=Count('attempts', filter=Q(attempts__status='success')),
+            failed_attempts=Count('attempts', filter=Q(attempts__status='failed'))
+        )
 
-    def post(self, request, pk):
-        mailing = get_object_or_404(Mailing, pk=pk)
-        mailing.is_active = False
-        mailing.save()
-        return redirect('newsletter:mailing_list')
+
+class MailingAttemptListView(ListView):
+    model = MailingAttempt
+    template_name = 'mailing_attempt_list.html'
+    context_object_name = 'attempts'
+
+    def get_queryset(self):
+        user = self.request.user
+        return MailingAttempt.objects.filter(mailing__owner=user)

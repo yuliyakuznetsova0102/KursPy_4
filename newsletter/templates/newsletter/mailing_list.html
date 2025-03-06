@@ -3,18 +3,19 @@
 {% block content %}
 <h1 class="text-center my-4">Список рассылок</h1>
 <div class="text-center mb-4">
-    <a href="{% url 'newsletter:mailing_create' %}" class="btn btn-primary btn-lg" role="button">Создать новую рассылку</a>
+    <a href="{% url 'newsletter:mailing_create' %}" class="btn btn-primary btn-lg" role="button">Создать новую
+        рассылку</a>
 </div>
 <table class="table table-striped table-bordered" style="margin-top: 30px;">
     <thead class="thead-dark">
-        <tr>
-            <th>Дата начала</th>
-            <th>Дата окончания</th>
-            <th>Статус</th>
-            <th>Сообщение</th>
-            <th>Получатели</th>
-            <th>Действия</th>
-        </tr>
+    <tr>
+        <th>Дата начала</th>
+        <th>Дата окончания</th>
+        <th>Статус</th>
+        <th>Сообщение</th>
+        <th>Получатели</th>
+        <th>Действия</th>
+    </tr>
     </thead>
     <tbody>
     {% if mailings %}
@@ -22,7 +23,7 @@
     <tr>
         <td style="padding: 20px;">{{ mailing.first_sent_at|date:"d.m.Y H:i" }}</td>
         <td style="padding: 20px;">{{ mailing.end_at|date:"d.m.Y H:i" }}</td>
-        <td style="padding: 20px;">{{ mailing.get_status_display }}</td>
+        <td style="padding: 20px;">{{ mailing.status }}</td>
         <td style="padding: 20px;">{{ mailing.message.subject }}</td>
         <td style="padding: 20px;">
             {% for recipient in mailing.recipients.all %}
@@ -36,11 +37,11 @@
         </td>
     </tr>
     {% endfor %}
-        {% else %}
-            <tr>
-                <td colspan="6" class="text-center">Нет доступных рассылок.</td>
-            </tr>
-        {% endif %}
+    {% else %}
+    <tr>
+        <td colspan="6" class="text-center">Нет доступных рассылок.</td>
+    </tr>
+    {% endif %}
     </tbody>
 </table>
 <style>

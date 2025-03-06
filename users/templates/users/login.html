@@ -1,0 +1,19 @@
+{% extends "newsletter/base.html" %}
+
+{% block content %}
+  <h2>Вход</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Войти</button>
+  </form>
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+      <p><a href="{% url 'users:password_reset' %}">Забыли пароль? Восстановите его.</a></p>
+    </div>
+  {% endif %}
+{% endblock %}

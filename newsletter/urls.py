@@ -1,10 +1,11 @@
 from django.urls import path
 from .views import (
     HomePageView,
-    RecipientListView, RecipientCreateView, RecipientUpdateView, RecipientDeleteView, RecipientDetailView,
+    MailingStatsView, RecipientListView, RecipientCreateView, RecipientUpdateView, RecipientDeleteView,
+    RecipientDetailView,
     MessageListView, MessageDetailView, MessageCreateView, MessageUpdateView, MessageDeleteView,
-    MailingDetailView, MailingDeleteView, MailingListView, MailingCreateView, MailingUpdateView, UserListView,
-    BlockUserView, DisableMailingView, send_mailing_manually
+    MailingDetailView, MailingDeleteView, MailingListView, MailingCreateView, MailingUpdateView, UserListView
+
 )
 
 app_name = 'newsletter'
@@ -23,14 +24,11 @@ urlpatterns = [
     path('message/update/<int:pk>/', MessageUpdateView.as_view(), name='message_update'),
     path('message/delete/<int:pk>/', MessageDeleteView.as_view(), name='message_delete'),
 
+    path('mailing_stats/', MailingStatsView.as_view(), name='mailing_stats'),
     path('mailing_list/', MailingListView.as_view(), name='mailing_list'),
     path('mailing_detail/<int:pk>/', MailingDetailView.as_view(), name='mailing_detail'),
     path('mailing/create/', MailingCreateView.as_view(), name='mailing_create'),
     path('mailing/update/<int:pk>/', MailingUpdateView.as_view(), name='mailing_update'),
     path('mailing/delete/<int:pk>/', MailingDeleteView.as_view(), name='mailing_delete'),
-    path('send-mailing/', send_mailing_manually, name='send_mailing_manually'),
-
     path('users/', UserListView.as_view(), name='user_list'),
-    path('users/block/<int:pk>/', BlockUserView.as_view(), name='block_user'),
-    path('mailings/disable/<int:pk>/', DisableMailingView.as_view(), name='disable_mailing'),
 ]

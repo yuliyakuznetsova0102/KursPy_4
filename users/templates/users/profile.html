@@ -1,0 +1,11 @@
+{% extends 'newsletter/base.html' %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+    <h2>Профиль пользователя</h2>
+    <p>Email: {{ user.email }}</p>
+    <p>Телефон: {{ user.phone_number }}</p>
+    <p>Страна: {{ user.country }}</p>
+    <a href="{% url 'users:profile_edit' %}" class="btn btn-primary">Редактировать профиль</a>
+{% endblock %}

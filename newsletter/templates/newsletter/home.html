@@ -109,71 +109,77 @@
     </script>
 </head>
 <body>
-    <h1>Добро пожаловать в Сервис рассылок</h1>
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-title">Всего рассылок</div>
-            <div class="stat-value">{{ total_mailings }}</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-title">Активные рассылки</div>
-            <div class="stat-value">{{ active_mailings }}</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-title">Уникальные получатели</div>
-            <div class="stat-value">{{ unique_recipients }}</div>
-        </div>
+<h1>Добро пожаловать в Сервис рассылок</h1>
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-title">Всего рассылок</div>
+        <div class="stat-value">{{ total_mailings }}</div>
     </div>
-    <div class="tabs">
-        <div class="tab" onclick="showTab('recipients-list')">Получатели</div>
-        <div class="tab" onclick="showTab('message-list')">Сообщения</div>
-        <div class="tab" onclick="showTab('mailing-list')">Управление рассылками</div>
+    <div class="stat-card">
+        <div class="stat-title">Активные рассылки</div>
+        <div class="stat-value">{{ active_mailings }}</div>
     </div>
-    <div id="recipients-list" class="tab-content active">
-        <h2>Получатели, добавленные или измененные в последние три операции</h2>
-        <div class="recipient-list">
-            {% for recipient in recent_recipients %}
-            <div class="card">
-                {{ recipient.full_name }}
-                <div class="status">
-                    {{ recipient.status }} - {{ recipient.updated_at|date:"d.m.Y H:i" }}
-                </div>
+    <div class="stat-card">
+        <div class="stat-title">Уникальные получатели</div>
+        <div class="stat-value">{{ unique_recipients }}</div>
+    </div>
+</div>
+<div class="tabs">
+    <div class="tab" onclick="showTab('recipients-list')">Получатели</div>
+    <div class="tab" onclick="showTab('message-list')">Сообщения</div>
+    <div class="tab" onclick="showTab('mailing-list')">Управление рассылками</div>
+</div>
+<div id="recipients-list" class="tab-content active">
+    <h2>Получатели, добавленные или измененные в последние три операции</h2>
+    <div class="recipient-list">
+        {% if recent_recipients %}
+        {% for recipient in recent_recipients %}
+        <div class="card">
+            {{ recipient.full_name }}
+            <div class="status">
+                {{ recipient.status }} - {{ recipient.updated_at|date:"d.m.Y H:i" }}
             </div>
-            {% empty %}
-            <div class="card">Нет доступных получателей.</div>
-            {% endfor %}
         </div>
+        {% endfor %}
+        {% else %}
+        <div class="card">Нет доступных получателей.</div>
+        {% endif %}
     </div>
-    <div id="message-list" class="tab-content">
-        <h2>Сообщения, добавленные или измененные в последние три операции</h2>
-        <div class="message-list">
-            {% for message in recent_messages %}
-            <div class="card">
-                {{ message.subject }}
-                <div class="status">
-                    {{ message.status }} - {{ message.updated_at|date:"d.m.Y H:i" }}
-                </div>
+</div>
+<div id="message-list" class="tab-content">
+    <h2>Сообщения, добавленные или измененные в последние три операции</h2>
+    <div class="message-list">
+        {% if recent_messages %}
+        {% for message in recent_messages %}
+        <div class="card">
+            {{ message.subject }}
+            <div class="status">
+                {{ message.status }} - {{ message.updated_at|date:"d.m.Y H:i" }}
             </div>
-            {% empty %}
-            <div class="card">Нет доступных сообщений.</div>
-            {% endfor %}
         </div>
+        {% endfor %}
+        {% else %}
+        <div class="card">Нет доступных сообщений.</div>
+        {% endif %}
     </div>
-    <div id="mailing-list" class="tab-content">
-        <h2>Рассылки, добавленные или измененные в последние три операции</h2>
-        <div class="mailing-list">
-            {% for mailing in recent_mailings %}
-            <div class="card">
-                {{ mailing.title }}
-                <div class="status">
-                    {{ mailing.status }} - {{ mailing.updated_at|date:"d.m.Y H:i" }}
-                </div>
+</div>
+<div id="mailing-list" class="tab-content">
+    <h2>Рассылки, добавленные или измененные в последние три операции</h2>
+    <div class="mailing-list">
+        {% if recent_mailings %}
+        {% for mailing in recent_mailings %}
+        <div class="card">
+            {{ mailing.title }}
+            <div class="status">
+                {{ mailing.status }} - {{ mailing.updated_at|date:"d.m.Y H:i" }}
             </div>
-            {% empty %}
-            <div class="card">Нет доступных рассылок.</div>
-            {% endfor %}
         </div>
+        {% endfor %}
+        {% else %}
+        <div class="card">Нет доступных рассылок.</div>
+        {% endif %}
     </div>
+</div>
 </body>
 </html>
 {% endblock %}

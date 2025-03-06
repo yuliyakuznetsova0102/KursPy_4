@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .success {
+            color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+        }
+        a {
+            color: #2196F3;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    {% if success %}
+    <h1 class="success">Email успешно подтвержден!</h1>
+    <p>Спасибо за подтверждение вашего email. Теперь вы можете войти в систему.</p>
+    <p><a href="{% url 'users:login' %}">Перейти к входу</a></p>
+    {% else %}
+    <h1 class="error">Ошибка подтверждения email</h1>
+    <p>Ссылка для подтверждения email недействительна или срок её действия истек.</p>
+    <p>Пожалуйста, попробуйте зарегистрироваться снова или обратитесь в поддержку.</p>
+    <p><a href="{% url 'users:register' %}">Повторить регистрацию</a></p>
+    {% endif %}
+</div>
+</body>
+</html>
