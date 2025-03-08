@@ -1,0 +1,66 @@
+{% extends 'newsletter/base.html' %}
+{% load my_tags %}
+{% block content %}
+<h1 class="text-center mb-4">Детали Рассылки</h1>
+<div class="container">
+    <p style="font-size: larger;"><strong>Дата начала:</strong> {{ mailing.first_sent_at|date:"d.m.Y H:i" }}</p>
+    <p style="font-size: larger;"><strong>Дата окончания:</strong> {{ mailing.end_at|date:"d.m.Y H:i" }}</p>
+    <p style="font-size: larger;"><strong>Статус:</strong> {{ mailing.get_status_display }}</p>
+    <p style="font-size: larger;"><strong>Сообщение:</strong> {{ mailing.message.subject }}</p>
+    <p style="font-size: larger;"><strong>Тело письма:</strong> {{ mailing.message.body }}</p>
+    <p style="font-size: larger;"><strong>Получатели:</strong></p>
+    <ul>
+        {% for recipient in mailing.recipients.all %}
+        <li style="font-size: larger;">{{ recipient.full_name }} ({{ recipient.email }})</li>
+        {% endfor %}
+    </ul>
+
+    <div class="d-flex justify-content-center mt-4 align-items-center">
+        <div class="mr-3">
+            <a href="{% url 'newsletter:mailing_update' mailing.id %}" class="btn"
+               style="background-color: #FFD700; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
+                Редактировать
+            </a>
+        </div>
+        <div style="margin-left: 5cm; margin-top: -0.46cm;">
+            <a href="{% url 'newsletter:mailing_delete' mailing.id %}" class="btn"
+               style="background-color: #dc3545; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
+                Удалить
+            </a>
+        </div>
+    </div>
+    <form method="post" action="{% url 'newsletter:mailing_detail' mailing.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Отправить вручную</button>
+    </form>
+    <div class="mt-4" style="margin-top: 0.9cm;">
+        <a href="{% url 'newsletter:mailing_list' %}" class="btn"
+           style="background-color: #007BFF; border: none; border-radius: 5px; padding: 10px 20px; color: white; font-size: 16px; text-decoration: none; transition: background-color 0.3s;">
+            Назад к списку рассылок
+        </a>
+
+    </div>
+</div>
+
+<style>
+    .btn {
+        width: 150px;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+    }
+
+    .btn[href*="update"]:hover {
+        background-color: #FFC107;
+    }
+
+    .btn[href*="list"]:hover {
+        background-color: #0056b3;
+    }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+</style>
+{% endblock %}

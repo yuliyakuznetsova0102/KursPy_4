@@ -1,0 +1,51 @@
+{% extends 'newsletter/base.html' %}
+
+{% block content %}
+<h1>Статистика и попытки рассылок</h1>
+
+<section>
+    <h2>Статистика</h2>
+    <ul>
+        {% for mailing in mailings %}
+        <li>
+            <h3>Рассылка: {{ mailing.message.subject }}</h3>
+            <p>Всего попыток: {{ mailing.total_attempts }}</p>
+            <p>Успешных попыток: {{ mailing.successful_attempts }}</p>
+            <p>Неуспешных попыток: {{ mailing.failed_attempts }}</p>
+
+            <button onclick="toggleAttempts('attempts-{{ mailing.id }}')">Показать попытки</button>
+
+            <div id="attempts-{{ mailing.id }}" style="display: none;">
+                <h4>Попытки рассылки</h4>
+                <ul>
+                    {% for attempt in mailing.attempts.all %}
+                    <li>
+                        <p>Время попытки: {{ attempt.attempt_time }}</p>
+                        <p>Статус: {{ attempt.status }}</p>
+                        <p>Ответ сервера: {{ attempt.server_response }}</p>
+                    </li>
+                    {% empty %}
+                    <p>Нет данных о попытках.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+        {% empty %}
+        <p>Нет данных о рассылках.</p>
+        {% endfor %}
+    </ul>
+</section>
+
+<script>
+    function toggleAttempts(elementId) {
+        const element = document.getElementById(elementId);
+        if (element.style.display === "none") {
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
+    }
+</script>
+
+<a href="{% url 'newsletter:mailing_list' %}">Назад к списку рассылок</a>
+{% endblock %}

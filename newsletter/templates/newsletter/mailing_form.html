@@ -1,0 +1,106 @@
+{% extends 'newsletter/base.html' %}
+{% block content %}
+
+<h2 class="text-center mb-4">{% if object %}Редактировать{% else %}Создать{% endif %} рассылку</h2>
+<form method="post" class="p-4 border rounded shadow-sm bg-light">
+    {% csrf_token %}
+    <input type="hidden" name="is_edit" value="{% if object %}true{% else %}false{% endif %}">
+
+    <div class="form-group mb-4">
+        <label for="{{ form.first_sent_at.id_for_label }}" class="form-label">Дата и время первой отправки:</label>
+        <input type="datetime-local" name="{{ form.first_sent_at.name }}" id="{{ form.first_sent_at.id_for_label }}"
+               class="form-control form-control-lg input-full" required="required"
+               value="{{ form.first_sent_at.value|default:'' }}">
+        {% if form.first_sent_at.errors %}
+        <div class="error text-danger">{{ form.first_sent_at.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-4">
+        <label for="{{ form.end_at.id_for_label }}" class="form-label">Дата и время окончания отправки:</label>
+        <input type="datetime-local" name="{{ form.end_at.name }}" id="{{ form.end_at.id_for_label }}"
+               class="form-control form-control-lg input-full" required="required"
+               value="{{ form.end_at.value|default:'' }}">
+        {% if form.end_at.errors %}
+        <div class="error text-danger">{{ form.end_at.errors }}</div>
+        {% endif %}
+    </div>
+
+
+    <div class="form-group mb-4">
+        <label for="{{ form.status.id_for_label }}" class="form-label">Статус:</label>
+        <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}"
+                class="form-control form-control-lg input-full" required="required">
+            {% for value, label in form.fields.status.choices %}
+            <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>
+                {{ label }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if form.status.errors %}
+        <div class="error text-danger">{{ form.status.errors }}</div>
+        {% endif %}
+    </div>
+
+
+    <div class="form-group mb-4">
+        <label for="{{ form.message.id_for_label }}" class="form-label">Сообщение:</label>
+        <select name="{{ form.message.name }}" id="{{ form.message.id_for_label }}"
+                class="form-control form-control-lg input-full" required="required">
+            {% for message in form.fields.message.queryset %}
+            <option value="{{ message.id }}" {% if form.message.value == message.id %}selected{% endif %}>
+                {{ message.subject }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if form.message.errors %}
+        <div class="error text-danger">{{ form.message.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group mb-4">
+        <label for="{{ form.recipients.id_for_label }}" class="form-label">Получатели:</label>
+        <select name="{{ form.recipients.name }}" id="{{ form.recipients.id_for_label }}"
+                class="form-control form-control-lg input-full" multiple required="required">
+            {% for recipient in form.fields.recipients.queryset %}
+            <option value="{{ recipient.id }}" {% if recipient.id in form.recipients.value %}selected{% endif %}>
+                {{ recipient.email }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if form.recipients.errors %}
+        <div class="error text-danger">{{ form.recipients.errors }}</div>
+        {% endif %}
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        {% if object %}
+        <button type="submit" class="btn btn-primary">Изменить</button>
+        {% else %}
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        {% endif %}
+        <a href="{% url 'newsletter:mailing_list' %}" class="btn btn-secondary">Отмена</a>
+    </div>
+</form>
+
+<style>
+    .input-full {
+        width: 100%;
+        line-height: 1.5;
+        font-size: 1.2rem;
+    }
+
+    .form-label {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control-lg {
+        font-size: 1.2rem;
+    }
+
+    .error {
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}

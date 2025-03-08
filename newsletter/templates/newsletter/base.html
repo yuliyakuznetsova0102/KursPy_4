@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Сервис рассылок{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <html lang="en">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background-color: white;
+            color: #333;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            font-size: 32px;
+            margin: 0;
+            font-weight: 300;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        header h1:hover {
+            color: #007bff;
+        }
+        nav {
+            margin: 0;
+        }
+        nav a {
+            margin: 0 10px;
+            color: #007bff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+        nav a:hover {
+            background-color: #007bff;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        footer {
+            background-color: white;
+            padding: 15px 20px;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+        footer h4 {
+            margin: 10px 0;
+        }
+        footer p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .info-section {
+            margin-top: 30px;
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .info-section h2 {
+            text-align: center;
+            color: #007bff;
+        }
+        .info-section p {
+            text-align: center;
+            color: #555;
+        }
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .feature-card {
+            background-color: white;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            flex: 1;
+            margin: 0 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        .feature-card:hover {
+            transform: scale(1.05);
+            text-align: center;
+        }
+    </style>
+    <script>
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        }
+    </script>
+    </style>
+</head>
+<body>
+<header>
+    <h1>Сервис рассылок</h1>
+    <nav>
+    <a href="/newsletter/home/">Главная</a>
+    <a href="/newsletter/recipients_list/">Получатели</a>
+    <a href="/newsletter/message_list/">Сообщения</a>
+    <a href="/newsletter/mailing_list/">Управление рассылками</a>
+    <a href="/newsletter/mailing_stats/">Статистика</a>
+    {% if user.is_authenticated and user.role == 'manager' %}
+    <a href="{% url 'newsletter:user_list' %}">Пользователи</a>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <a href="{% url 'users:profile' %}">Профиль</a>
+    <a href="{% url 'users:logout' %}">Выход</a>
+    {% else %}
+    <a href="{% url 'users:login' %}">Вход</a>
+    <a href="{% url 'users:register' %}">Регистрация</a>
+    {% endif %}
+</nav>
+</header>
+<div class="container">
+    {% block content %}
+    <h2>Мои сообщения</h2>
+    <ul>
+        {% for message in messages %}
+        <li>{{ message.text }} - {{ message.created_at }}</li>
+        {% empty %}
+        <li>У вас пока нет сообщений.</li>
+        {% endfor %}
+    </ul>
+    {% endblock %}
+    <div class="info-section">
+        <h2>Почему выбирают нас?</h2>
+        <p>Мы предлагаем лучший сервис для управления рассылками с простым интерфейсом и множеством функций.</p>
+        <div class="features">
+            <div class="feature-card">
+                <h3>Легкость использования</h3>
+                <p>Наш интерфейс интуитивно понятен и прост в использовании.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Быстрая настройка</h3>
+                <p>Настройте свои рассылки всего за несколько минут.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Поддержка клиентов</h3>
+                <p>Мы всегда готовы помочь вам с любыми вопросами.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
