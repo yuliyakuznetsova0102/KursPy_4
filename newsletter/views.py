@@ -11,13 +11,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.db.models import Count, Q
 from users.models import CustomUser
-from django.views.decorators.cache import cache_page
-from django.utils.decorators import method_decorator
+
 
 
 
 # Главная страница
-@method_decorator(cache_page(60 * 5), name='dispatch')
 class HomePageView(LoginRequiredMixin, TemplateView):
     template_name = 'newsletter/home.html'
 

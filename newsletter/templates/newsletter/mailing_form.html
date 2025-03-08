@@ -32,7 +32,7 @@
         <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}"
                 class="form-control form-control-lg input-full" required="required">
             {% for value, label in form.fields.status.choices %}
-            <option value="{{ value }}" {% if form.status.value== value %}selected{% endif %}>
+            <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>
                 {{ label }}
             </option>
             {% endfor %}
@@ -48,7 +48,7 @@
         <select name="{{ form.message.name }}" id="{{ form.message.id_for_label }}"
                 class="form-control form-control-lg input-full" required="required">
             {% for message in form.fields.message.queryset %}
-            <option value="{{ message.id }}" {% if form.message.value== message.id %}selected{% endif %}>
+            <option value="{{ message.id }}" {% if form.message.value == message.id %}selected{% endif %}>
                 {{ message.subject }}
             </option>
             {% endfor %}

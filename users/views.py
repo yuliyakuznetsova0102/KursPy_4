@@ -17,9 +17,11 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
+from django.views.decorators.http import require_POST
+from django.core.cache import cache
+import logging
 
-
-
+logger = logging.getLogger(__name__)
 
 class UserRegistrationView(CreateView):
     form_class = UserRegistrationForm
@@ -110,10 +112,10 @@ class UserLoginView(FormView):
         return super().form_invalid(form)
 
 
+
 def user_logout(request):
     logout(request)
     return redirect('newsletter:home')
-
 
 class UserPasswordResetView(PasswordResetView):
     template_name = 'users/password_reset.html'

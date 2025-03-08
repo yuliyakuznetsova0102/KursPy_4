@@ -132,22 +132,22 @@
 <header>
     <h1>Сервис рассылок</h1>
     <nav>
-        <a href="/newsletter/home/">Главная</a>
-        <a href="/newsletter/recipients_list/">Получатели</a>
-        <a href="/newsletter/message_list/">Сообщения</a>
-        <a href="/newsletter/mailing_list/">Управление рассылками</a>
-        <a href="/newsletter/mailing_stats/">Статистика</a>
-        {% if user.is_authenticated and user.role == 'manager' %}
-        <a href="{% url 'newsletter:user_list' %}">Пользователи</a>
-        {% endif %}
-        {% if user.is_authenticated %}
-        <a href="{% url 'users:profile' %}">Профиль</a>
-        <a href="{% url 'users:logout' %}">Выход</a>
-        {% else %}
-        <a href="{% url 'users:login' %}">Вход</a>
-        <a href="{% url 'users:register' %}">Регистрация</a>
-        {% endif %}
-    </nav>
+    <a href="/newsletter/home/">Главная</a>
+    <a href="/newsletter/recipients_list/">Получатели</a>
+    <a href="/newsletter/message_list/">Сообщения</a>
+    <a href="/newsletter/mailing_list/">Управление рассылками</a>
+    <a href="/newsletter/mailing_stats/">Статистика</a>
+    {% if user.is_authenticated and user.role == 'manager' %}
+    <a href="{% url 'newsletter:user_list' %}">Пользователи</a>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <a href="{% url 'users:profile' %}">Профиль</a>
+    <a href="{% url 'users:logout' %}">Выход</a>
+    {% else %}
+    <a href="{% url 'users:login' %}">Вход</a>
+    <a href="{% url 'users:register' %}">Регистрация</a>
+    {% endif %}
+</nav>
 </header>
 <div class="container">
     {% block content %}
